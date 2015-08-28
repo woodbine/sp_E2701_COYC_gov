@@ -57,14 +57,14 @@ def convert_mth_strings ( mth_string ):
     return mth_string
 # pull down the content from the webpage
 html = urllib2.urlopen(url)
-soup = BeautifulSoup(html)
+soup = BeautifulSoup(html, 'lxml')
 # find all entries with the required class
 block = soup.find('ul', 'item-list')
 links = block.findAll('a')
 for link in links:
     urls = link['href']
     html_csv = urllib2.urlopen(urls)
-    soup_csv = BeautifulSoup(html_csv)
+    soup_csv = BeautifulSoup(html_csv, 'lxml')
     url = soup_csv.find('a', 'button button--primary')['href']
     csvfile = soup_csv.find('a', 'button button--primary')['href'].split('cycpayments')[-1]
     csvYr = csvfile[:4]
