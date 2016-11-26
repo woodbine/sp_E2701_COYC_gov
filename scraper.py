@@ -85,7 +85,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E2701_COYC_gov"
-url = "https://www.york.gov.uk/downloads/download/1340/payments_to_suppliers_-_csv_files"
+url = "https://data.yorkopendata.org/dataset/all-payments-to-suppliers"
 errors = 0
 data = []
 
@@ -98,18 +98,19 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-block = soup.find('ul', 'item-list')
+block = soup.find('ul', 'resource-table')
 links = block.findAll('a')
 for link in links:
-    urls = link['href']
-    html_csv = urllib2.urlopen(urls)
-    soup_csv = BeautifulSoup(html_csv, 'lxml')
-    url = soup_csv.find('a', 'button button--primary')['href']
-    csvfile = soup_csv.find('a', 'button button--primary')['href'].split('cycpayments')[-1]
-    csvYr = csvfile[:4]
-    csvMth = csvfile[5:7]
-    csvMth = convert_mth_strings(csvMth.upper())
-    data.append([csvYr, csvMth, url])
+    if '.csv' in link['href']:
+        url = link['href']
+        csv_text = link.find_previous('h4').text.split(' - ')[-1].strip()
+        if '-' in csv_text:
+            csvMth = 'Q0'
+        else:
+            csvMth = 'Y1'
+        csvYr = csv_text[:4]
+        csvMth = convert_mth_strings(csvMth.upper())
+        data.append([csvYr, csvMth, url])
 
 
 #### STORE DATA 1.0
